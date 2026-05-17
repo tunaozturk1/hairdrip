@@ -148,7 +148,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider initialMode="dark" initialAccent="acid">
+      <ThemeProvider initialMode="dark" initialAccent="electric">
         {fontsLoaded && hydrated ? (
           <AppShell />
         ) : (
