@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Product
+
+HaircutCon helps teenage boys and young men pick a haircut that fits their face shape, hair type, lifestyle, and confidence level. It addresses three problems: many don't know what cut suits them, can't clearly explain what they want to a barber, and leave the chair unhappy with the result.
+
+The flow maps directly onto these: the **analysis** stage answers "what suits me," the **barber card** (`BarberScreen` / `src/data.ts` `BarberCard`) gives them precise wording to show a barber, and **history** logs outcomes so future recommendations improve. Keep this audience in mind — copy should be plain-spoken and confidence-building, not jargon-heavy.
+
 ## Commands
 
 ```bash
