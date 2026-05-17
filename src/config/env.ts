@@ -18,7 +18,7 @@ export const OPENAI_MODEL =
 
 /** Image-edit model for the "see it on you" try-on preview. */
 export const OPENAI_IMAGE_MODEL =
-  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_MODEL ?? '').trim() || 'gpt-image-1';
+  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_MODEL ?? '').trim() || 'gpt-image-2';
 
 /** True when an OpenAI API key has been configured. */
 export const isApiConfigured = OPENAI_API_KEY.length > 0;

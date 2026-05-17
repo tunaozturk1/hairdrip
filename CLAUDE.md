@@ -23,7 +23,7 @@ There is no test suite. `src/services/recScoring.ts` is written to be testable i
 ## Environment
 
 Copy `.env.example` to `.env`. The app reads `EXPO_PUBLIC_*` vars via `src/config/env.ts`:
-`EXPO_PUBLIC_OPENAI_API_KEY`, `EXPO_PUBLIC_OPENAI_MODEL` (default `gpt-5.4`), `EXPO_PUBLIC_OPENAI_IMAGE_MODEL` (default `gpt-image-1`).
+`EXPO_PUBLIC_OPENAI_API_KEY`, `EXPO_PUBLIC_OPENAI_MODEL` (default `gpt-5.4`), `EXPO_PUBLIC_OPENAI_IMAGE_MODEL` (default `gpt-image-2`).
 
 `EXPO_PUBLIC_*` vars are inlined at bundler startup, **not hot-reloaded** — restart `npm start` after editing `.env`. The OpenAI key ships inside the app bundle (demo-grade tradeoff); for a real release the OpenAI calls belong behind a server.
 

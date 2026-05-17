@@ -45,7 +45,7 @@ Set these in `.env` (see `.env.example`):
 | --- | --- | --- |
 | `EXPO_PUBLIC_OPENAI_API_KEY` | OpenAI API key | _required_ |
 | `EXPO_PUBLIC_OPENAI_MODEL` | Vision model for face analysis | `gpt-5.4` |
-| `EXPO_PUBLIC_OPENAI_IMAGE_MODEL` | Image model for try-on previews | `gpt-image-1` |
+| `EXPO_PUBLIC_OPENAI_IMAGE_MODEL` | Image model for try-on previews | `gpt-image-2` |
 
 `EXPO_PUBLIC_*` vars are inlined into the bundle at startup and are **not** hot-reloaded — restart `npm start` after editing `.env`. The key ships inside the app bundle, which is a demo-grade tradeoff; a production release should move the OpenAI calls behind a server. Keep a hard spend cap on the key.
 
