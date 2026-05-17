@@ -20,5 +20,13 @@ export const OPENAI_MODEL =
 export const OPENAI_IMAGE_MODEL =
   (process.env.EXPO_PUBLIC_OPENAI_IMAGE_MODEL ?? '').trim() || 'gpt-image-2';
 
+/** Render quality for the try-on image edit: `low` | `medium` | `high`. */
+export const OPENAI_IMAGE_QUALITY =
+  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_QUALITY ?? '').trim() || 'low';
+
+/** Output size for the try-on image edit, e.g. `1024x1024` or `1024x1536`. */
+export const OPENAI_IMAGE_SIZE =
+  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_SIZE ?? '').trim() || '1024x1024';
+
 /** True when an OpenAI API key has been configured. */
 export const isApiConfigured = OPENAI_API_KEY.length > 0;

@@ -5,16 +5,17 @@
  * image-edit endpoint and returns the generated image as a base64 PNG string.
  * The OpenAI key ships in the app bundle — see `src/config/env.ts`.
  */
-import { OPENAI_API_KEY, OPENAI_IMAGE_MODEL } from '../config/env';
+import {
+  OPENAI_API_KEY,
+  OPENAI_IMAGE_MODEL,
+  OPENAI_IMAGE_QUALITY,
+  OPENAI_IMAGE_SIZE,
+} from '../config/env';
 import type { Haircut } from '../data';
 
 const OPENAI_EDIT_URL = 'https://api.openai.com/v1/images/edits';
 /** Image generation is slow — allow well past a typical 30-60s run. */
 const TIMEOUT_MS = 120_000;
-/** Portrait — closest to the 4:5 selfie, good framing for a head-and-hair shot. */
-const SIZE = '1024x1536';
-/** `medium` keeps faces clean without `high`'s extra cost. */
-const QUALITY = 'medium';
 
 /** Human-readable instruction set for the image model. */
 function buildTryOnPrompt(h: Haircut): string {
@@ -46,10 +47,9 @@ export async function generateTryOn(args: {
   const form = new FormData();
   form.append('model', OPENAI_IMAGE_MODEL);
   form.append('prompt', buildTryOnPrompt(args.haircut));
-  form.append('size', SIZE);
-  form.append('quality', QUALITY);
-  // `high` input fidelity preserves the person's face far better on edits.
-  form.append('input_fidelity', 'high');
+  form.append('size', OPENAI_IMAGE_SIZE);
+  form.append('quality', OPENAI_IMAGE_QUALITY);
+  // `input_fidelity` is intentionally omitted — gpt-image-2 rejects it.
   form.append('image', {
     uri: args.photoUri,
     name: 'selfie.jpg',

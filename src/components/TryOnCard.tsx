@@ -5,8 +5,16 @@
  * or returning to an already-previewed cut is instant and costs nothing.
  */
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import type { Haircut } from '../data';
+import { saveTryOnToGallery } from '../services/saveImage';
 import { generateTryOn } from '../services/tryOnApi';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
@@ -25,6 +33,9 @@ export function TryOnCard({ haircut }: Props) {
   const setTryOnImage = useAppStore((s) => s.setTryOnImage);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>(
+    'idle',
+  );
 
   const run = async () => {
     setStatus('loading');
@@ -32,12 +43,29 @@ export function TryOnCard({ haircut }: Props) {
     try {
       const b64 = await generateTryOn({ photoUri: photoUri ?? '', haircut });
       setTryOnImage(haircut.id, b64);
+      setSaveState('idle');
       setStatus('idle');
     } catch (e) {
       setErrorMsg(
         e instanceof Error ? e.message : 'Could not generate the preview.',
       );
       setStatus('error');
+    }
+  };
+
+  const save = async () => {
+    if (!image) return;
+    setSaveState('saving');
+    try {
+      await saveTryOnToGallery(image, haircut);
+      setSaveState('saved');
+      Alert.alert('Saved', 'Preview added to your photos.');
+    } catch (e) {
+      setSaveState('idle');
+      Alert.alert(
+        'Save failed',
+        e instanceof Error ? e.message : 'Could not save the preview.',
+      );
     }
   };
 
@@ -85,6 +113,25 @@ export function TryOnCard({ haircut }: Props) {
           <Text style={[styles.disclaimer, { color: theme.fg3 }]}>
             AI preview — an approximation, not a guaranteed result.
           </Text>
+          <PrimaryButton
+            block
+            disabled={saveState === 'saving'}
+            onPress={save}
+            style={{ marginBottom: 10 }}
+          >
+            <Icon
+              name={saveState === 'saved' ? 'check' : 'save'}
+              size={16}
+              color={theme.accentFg}
+            />
+            <Text style={[styles.btnText, { color: theme.accentFg }]}>
+              {saveState === 'saving'
+                ? 'Saving…'
+                : saveState === 'saved'
+                  ? 'Saved'
+                  : 'Save to gallery'}
+            </Text>
+          </PrimaryButton>
           <GhostButton block onPress={run}>
             <Icon name="sparkle" size={16} color={theme.fg1} />
             <Text style={[styles.btnText, { color: theme.fg1 }]}>

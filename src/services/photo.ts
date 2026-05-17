@@ -31,6 +31,49 @@ async function process(
   return { uri: out.uri, base64: out.base64 ?? '' };
 }
 
+/**
+ * Process a photo captured by the in-app camera: center-crop to the 4:5
+ * viewfinder framing, downscale, and re-encode as JPEG + base64.
+ */
+export async function processCapture(
+  uri: string,
+  width: number,
+  height: number,
+): Promise<{ uri: string; base64: string }> {
+  const context = ImageManipulator.manipulate(uri);
+
+  // Center-crop to 4:5 portrait so the saved photo matches what the oval
+  // viewfinder showed the user.
+  const targetRatio = 4 / 5;
+  let cropW = width;
+  if (width / height > targetRatio) {
+    cropW = Math.round(height * targetRatio);
+    context.crop({
+      originX: Math.round((width - cropW) / 2),
+      originY: 0,
+      width: cropW,
+      height,
+    });
+  } else {
+    const cropH = Math.round(width / targetRatio);
+    context.crop({
+      originX: 0,
+      originY: Math.round((height - cropH) / 2),
+      width,
+      height: cropH,
+    });
+  }
+
+  if (cropW > MAX_WIDTH) context.resize({ width: MAX_WIDTH });
+  const ref = await context.renderAsync();
+  const out = await ref.saveAsync({
+    compress: 0.8,
+    format: SaveFormat.JPEG,
+    base64: true,
+  });
+  return { uri: out.uri, base64: out.base64 ?? '' };
+}
+
 /** Capture a selfie from the camera or the photo library. */
 export async function captureSelfie(
   source: 'camera' | 'library',

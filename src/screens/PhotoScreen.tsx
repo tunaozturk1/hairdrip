@@ -9,13 +9,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import Svg, { Circle, Defs, Ellipse, Mask, Path, Rect } from 'react-native-svg';
 import { GhostButton, PrimaryButton } from '../components/Buttons';
 import { Eyebrow } from '../components/Eyebrow';
 import { Icon, IconName } from '../components/Icon';
 import { Screen } from '../components/Screen';
 import { TopBar } from '../components/TopBar';
-import { captureSelfie } from '../services/photo';
+import { captureSelfie, processCapture } from '../services/photo';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -30,11 +31,47 @@ export function PhotoScreen({ onNext, onBack }: Props) {
   const [taken, setTaken] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [permDenied, setPermDenied] = useState(false);
+  const [capturing, setCapturing] = useState(false);
+  const [camPerm, requestCamPerm] = useCameraPermissions();
+  const cameraRef = useRef<CameraView>(null);
   const scanAnim = useRef(new Animated.Value(0)).current;
 
-  const handleCapture = async (source: 'camera' | 'library') => {
+  // Ask for camera access on mount so the live preview is ready to go.
+  useEffect(() => {
+    if (camPerm && !camPerm.granted && camPerm.canAskAgain) {
+      requestCamPerm();
+    }
+  }, [camPerm, requestCamPerm]);
+
+  const camGranted = camPerm?.granted ?? false;
+  const camBlocked = !!camPerm && !camPerm.granted && !camPerm.canAskAgain;
+
+  const handleTakePhoto = async () => {
+    if (capturing) return;
+    if (!camGranted) {
+      const res = await requestCamPerm();
+      if (!res.granted) setPermDenied(true);
+      return;
+    }
+    if (!cameraRef.current) return;
+    setCapturing(true);
+    try {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+      if (!photo) return;
+      const processed = await processCapture(photo.uri, photo.width, photo.height);
+      setPreview(processed.uri);
+      setPhoto(processed.uri, processed.base64);
+      setTaken(true);
+    } catch {
+      Alert.alert('Something went wrong', 'Could not capture that photo. Please try again.');
+    } finally {
+      setCapturing(false);
+    }
+  };
+
+  const handleUpload = async () => {
     setPermDenied(false);
-    const result = await captureSelfie(source);
+    const result = await captureSelfie('library');
     if (result.ok) {
       setPreview(result.uri);
       setPhoto(result.uri, result.base64);
@@ -78,11 +115,13 @@ export function PhotoScreen({ onNext, onBack }: Props) {
       footer={
         !taken ? (
           <View style={{ gap: 10 }}>
-            <PrimaryButton block onPress={() => handleCapture('camera')}>
+            <PrimaryButton block onPress={handleTakePhoto} disabled={capturing}>
               <Icon name="camera" size={18} color={theme.accentFg} />
-              <Text style={[styles.btnText, { color: theme.accentFg }]}>Take photo</Text>
+              <Text style={[styles.btnText, { color: theme.accentFg }]}>
+                {capturing ? 'Capturing…' : 'Take photo'}
+              </Text>
             </PrimaryButton>
-            <GhostButton block onPress={() => handleCapture('library')}>
+            <GhostButton block onPress={handleUpload}>
               <Icon name="upload" size={16} color={theme.fg1} />
               <Text style={[styles.btnText, { color: theme.fg1 }]}>
                 Upload from camera roll
@@ -113,7 +152,8 @@ export function PhotoScreen({ onNext, onBack }: Props) {
           Let's find what actually fits your face.
         </Text>
         <Text style={[styles.subtitle, { color: theme.fg2 }]}>
-          One front-facing photo. We analyze face shape, hair type, and volume.
+          Line your face up inside the oval. We analyze face shape, hair type,
+          and volume.
         </Text>
 
         <View
@@ -122,18 +162,25 @@ export function PhotoScreen({ onNext, onBack }: Props) {
             { backgroundColor: theme.bg2, borderColor: theme.lineSoft },
           ]}
         >
-          {taken && preview && (
+          {taken && preview ? (
             <Image
               source={{ uri: preview }}
               style={StyleSheet.absoluteFill}
               resizeMode="cover"
             />
-          )}
+          ) : camGranted ? (
+            <CameraView
+              ref={cameraRef}
+              style={StyleSheet.absoluteFill}
+              facing="front"
+            />
+          ) : null}
           <Svg
             width="100%"
             height="100%"
             viewBox="0 0 200 250"
             style={StyleSheet.absoluteFill as any}
+            pointerEvents="none"
           >
             <Defs>
               <Mask id="faceMask">
@@ -199,6 +246,17 @@ export function PhotoScreen({ onNext, onBack }: Props) {
             />
           )}
 
+          {!taken && !camGranted && (
+            <View style={styles.camOff} pointerEvents="none">
+              <Icon name="camera" size={22} color={theme.fg2} />
+              <Text style={[styles.camOffText, { color: theme.fg2 }]}>
+                {camBlocked
+                  ? 'Camera access is off'
+                  : 'Allow camera access to start'}
+              </Text>
+            </View>
+          )}
+
           <View style={styles.hudTop}>
             <Text
               style={[
@@ -246,7 +304,7 @@ export function PhotoScreen({ onNext, onBack }: Props) {
           )}
         </View>
 
-        {permDenied && (
+        {(permDenied || camBlocked) && (
           <View
             style={[
               styles.permBox,
@@ -315,6 +373,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 80,
+  },
+  camOff: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  camOffText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
   hudTop: {
     position: 'absolute',

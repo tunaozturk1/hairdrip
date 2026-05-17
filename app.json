@@ -25,6 +25,20 @@
           "photosPermission": "HaircutCon uses your photos to analyze your face shape and hair.",
           "cameraPermission": "HaircutCon uses the camera to take a selfie for face analysis."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "HaircutCon uses the camera to take a selfie for face analysis."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "HaircutCon saves your try-on previews to your photos.",
+          "savePhotosPermission": "HaircutCon saves your try-on previews to your photos.",
+          "isAccessMediaLocationEnabled": false
+        }
       ]
     ]
   }
