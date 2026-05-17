@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Runs the serverless backend locally via `vercel dev`. The JS debugger
+      // auto-attaches to the function child processes, so breakpoints set in
+      // backend/api/*.ts and backend/lib/*.ts are hit on each request.
+      "name": "Backend: vercel dev",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vercel", "dev", "--listen", "0.0.0.0:3000"],
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      // Attaches to a `vercel dev` you started yourself in a plain terminal.
+      // Start it with the inspector enabled so this can connect:
+      //   cd backend && NODE_OPTIONS='--inspect' npx vercel dev --listen 0.0.0.0:3000
+      // `autoAttachChildProcesses` follows into the function processes, so
+      // breakpoints in backend/api/*.ts and backend/lib/*.ts still bind.
+      "name": "Backend: attach to vercel dev",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "cwd": "${workspaceFolder}/backend",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
