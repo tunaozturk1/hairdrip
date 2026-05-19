@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Ellipse, LinearGradient, Path, Stop } from 'react-native-svg';
 import { HAIRCUT_IMAGES } from '../data/haircutImages';
 import { useTheme } from '../theme/ThemeContext';
@@ -17,6 +17,28 @@ export function HaircutTile({ id, height = 168, label }: HaircutTileProps) {
   const gradId = `g-${id}`;
   const photo = HAIRCUT_IMAGES[id];
 
+  // Crossfade the photo in once it loads; gently pulse the placeholder
+  // silhouette until then so the tile never reads as empty.
+  const [loaded, setLoaded] = useState(false);
+  const fade = useRef(new Animated.Value(0)).current;
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (loaded || !photo) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 850, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 850, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [loaded, photo, pulse]);
+
+  const placeholderOpacity = photo
+    ? pulse.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.8] })
+    : 1;
+
   return (
     <View
       style={[
@@ -28,27 +50,15 @@ export function HaircutTile({ id, height = 168, label }: HaircutTileProps) {
         },
       ]}
     >
-      {photo ? (
-        // Real reference photo of the cut.
-        <Image
-          source={photo}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-          onLoad={(e) =>
-            console.log('[HaircutTile] LOADED', id, e.nativeEvent?.source)
-          }
-          onError={(e) =>
-            console.log('[HaircutTile] ERROR', id, e.nativeEvent?.error)
-          }
-        />
-      ) : (
-        <>
+      {/* Placeholder — visible until the photo has faded in, and the permanent
+          state for any cut that has no reference photo. */}
+      {!loaded && (
+        <Animated.View
+          style={[StyleSheet.absoluteFill, { opacity: placeholderOpacity }]}
+        >
           {/* striped placeholder background */}
           <View
-            style={[
-              StyleSheet.absoluteFill,
-              { backgroundColor: theme.bg2, opacity: 1 },
-            ]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg2 }]}
           />
           <View
             style={[StyleSheet.absoluteFill, styles.stripes, { opacity: 0.5 }]}
@@ -87,21 +97,55 @@ export function HaircutTile({ id, height = 168, label }: HaircutTileProps) {
               />
             </Svg>
           </View>
-        </>
+        </Animated.View>
       )}
-      {label && (
-        <Text
+
+      {/* Real reference photo of the cut. Explicit 100%×100% size (see
+          `styles.fill`) — an <Image> otherwise lays out at its intrinsic
+          1024px width and overflows the tile. Fades and settles in on load. */}
+      {photo && (
+        <Animated.Image
+          source={photo}
           style={[
-            styles.label,
-            // Over a photo, a scrim keeps the mono label legible; over the
-            // placeholder it reads fine against the dark fill.
-            photo
-              ? { fontFamily: theme.fonts.mono, color: '#fff', backgroundColor: 'rgba(0,0,0,0.55)' }
-              : { fontFamily: theme.fonts.mono, color: theme.fg3 },
+            styles.fill,
+            {
+              opacity: fade,
+              transform: [
+                {
+                  scale: fade.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1.06, 1],
+                  }),
+                },
+              ],
+            },
           ]}
-        >
-          {label}
-        </Text>
+          resizeMode="cover"
+          onLoad={() =>
+            Animated.timing(fade, {
+              toValue: 1,
+              duration: 320,
+              useNativeDriver: true,
+            }).start(() => setLoaded(true))
+          }
+        />
+      )}
+
+      {label && (
+        <View style={styles.labelWrap}>
+          <Text
+            style={[
+              styles.label,
+              // Over a photo, a scrim keeps the mono label legible; over the
+              // placeholder it reads fine against the dark fill.
+              photo
+                ? { fontFamily: theme.fonts.mono, color: '#fff', backgroundColor: 'rgba(0,0,0,0.55)' }
+                : { fontFamily: theme.fonts.mono, color: theme.fg3 },
+            ]}
+          >
+            {label}
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -110,9 +154,21 @@ export function HaircutTile({ id, height = 168, label }: HaircutTileProps) {
 const styles = StyleSheet.create({
   tile: {
     overflow: 'hidden',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
     position: 'relative',
+  },
+  // The photo fills the tile. Explicit 100%×100% (not `flex` or
+  // `alignSelf: 'stretch'`) — an <Image> reports an intrinsic measured size
+  // that `stretch` does not override, so without an explicit width the image
+  // rendered 1024px wide and overflowed the tile.
+  fill: {
+    width: '100%',
+    height: '100%',
+  },
+  // Label sits over the bottom-left corner regardless of fill content.
+  labelWrap: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
   },
   stripes: {
     // approximation of the repeating striped overlay
@@ -126,6 +182,5 @@ const styles = StyleSheet.create({
     margin: 8,
     borderRadius: 6,
     overflow: 'hidden',
-    zIndex: 1,
   },
 });
