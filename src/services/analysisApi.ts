@@ -41,6 +41,7 @@ interface AnalyzeResponse {
     current: string;
     styleSummary: string;
     notes: string[];
+    facialFeatures: string;
   };
   ranking: { id: string; fit: number; why: string }[];
 }
@@ -214,6 +215,7 @@ export async function analyzePhoto(args: {
     current: a.current ?? '—',
     styleSummary: a.styleSummary ?? 'balanced',
     notes: Array.isArray(a.notes) ? a.notes.slice(0, 4) : [],
+    facialFeatures: a.facialFeatures ?? '',
     photoUri: args.photoUri,
     createdAt: Date.now(),
   };

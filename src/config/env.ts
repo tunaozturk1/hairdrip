@@ -20,13 +20,21 @@ export const OPENAI_MODEL =
 export const OPENAI_IMAGE_MODEL =
   (process.env.EXPO_PUBLIC_OPENAI_IMAGE_MODEL ?? '').trim() || 'gpt-image-2';
 
-/** Render quality for the try-on image edit: `low` | `medium` | `high`. */
+/**
+ * Render quality for the try-on image edit: `low` | `medium` | `high`.
+ * Defaults to `high` — lower settings smooth skin texture, acne and stubble
+ * away, so the face stops looking like the actual user.
+ */
 export const OPENAI_IMAGE_QUALITY =
-  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_QUALITY ?? '').trim() || 'low';
+  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_QUALITY ?? '').trim() || 'high';
 
-/** Output size for the try-on image edit, e.g. `1024x1024` or `1024x1536`. */
+/**
+ * Output size for the try-on image edit, e.g. `1024x1024` or `1024x1536`.
+ * Defaults to portrait `1024x1536` to match the 4:5 selfie — a square output
+ * forces the model to recompose the face and distorts it.
+ */
 export const OPENAI_IMAGE_SIZE =
-  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_SIZE ?? '').trim() || '1024x1024';
+  (process.env.EXPO_PUBLIC_OPENAI_IMAGE_SIZE ?? '').trim() || '1024x1536';
 
 /** True when an OpenAI API key has been configured. */
 export const isApiConfigured = OPENAI_API_KEY.length > 0;

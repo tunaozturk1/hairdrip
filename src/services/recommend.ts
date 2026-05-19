@@ -31,6 +31,9 @@ export function buildSeedAnalysis(photoUri: string): AnalysisResult {
       'Medium-density wavy hair holds texture well — fringe and crop cuts will work.',
       'Avoid styles that add length: tall quiffs, slick-backs, full pompadours.',
     ],
+    // Deliberately empty: the offline seed never saw the photo, so it must not
+    // assert facial features. The try-on prompt falls back to generic language.
+    facialFeatures: '',
     photoUri,
     createdAt: Date.now(),
   };

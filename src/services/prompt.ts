@@ -33,7 +33,8 @@ Your job:
 1. Analyze the photo. Determine face shape (e.g. Oval, Round, Square, Heart, Oblong, Diamond), an honest confidence 0-100, hair type/texture, hair volume, and a forehead description. Note the current hair state.
 2. Write a one-line "styleSummary" — the kind of styles that suit this person (e.g. "low-volume, textured").
 3. Write 2-3 short, specific "notes" — concrete observations that reference what you actually see in the photo, not generic advice.
-4. Rank EVERY haircut in the catalog below for THIS person. Give each a "fit" score 0-100 and a one-sentence "why" specific to their face and stated preferences.
+4. Write a "facialFeatures" line — a precise, neutral description of the person's distinctive NON-HAIR features, used later to keep an AI try-on preview looking like the same person. Cover: facial hair (beard/stubble/moustache and its density), skin (acne, blemishes, freckles, moles, scars, complexion/tone), glasses, and any other identifying traits. Describe only what is visible; if a feature is absent, say so briefly (e.g. "clean-shaven, clear skin, no glasses"). This is not advice — do not flatter or soften it.
+5. Rank EVERY haircut in the catalog below for THIS person. Give each a "fit" score 0-100 and a one-sentence "why" specific to their face and stated preferences.
 
 Catalog:
 ${lines}
@@ -64,6 +65,7 @@ export function buildResponseSchema(catalog: CatalogEntry[]): Record<string, unk
           current: { type: 'string' },
           styleSummary: { type: 'string' },
           notes: { type: 'array', items: { type: 'string' } },
+          facialFeatures: { type: 'string' },
         },
         required: [
           'shape',
@@ -74,6 +76,7 @@ export function buildResponseSchema(catalog: CatalogEntry[]): Record<string, unk
           'current',
           'styleSummary',
           'notes',
+          'facialFeatures',
         ],
       },
       ranking: {

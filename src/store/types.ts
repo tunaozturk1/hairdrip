@@ -27,6 +27,13 @@ export interface AnalysisResult {
   /** Headline phrase, e.g. "low-volume, textured". */
   styleSummary: string;
   notes: string[];
+  /**
+   * Distinctive non-hair facial features (facial hair, skin, glasses, …).
+   * Identity anchor fed into the try-on image prompt so the preview keeps
+   * looking like the actual user. Empty when the read came from the offline
+   * seed fallback, which never saw the photo.
+   */
+  facialFeatures: string;
   photoUri: string;
   createdAt: number;
 }

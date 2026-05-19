@@ -17,16 +17,33 @@ const OPENAI_EDIT_URL = 'https://api.openai.com/v1/images/edits';
 /** Image generation is slow — allow well past a typical 30-60s run. */
 const TIMEOUT_MS = 120_000;
 
-/** Human-readable instruction set for the image model. */
-function buildTryOnPrompt(h: Haircut): string {
+/**
+ * Human-readable instruction set for the image model.
+ *
+ * Image models default to beautifying faces — smoothing skin and dropping
+ * acne, stubble and other detail — which makes every preview look like the
+ * same generic model. The prompt below forbids that explicitly, and an
+ * optional `facialFeatures` description anchors the result to the real user.
+ */
+function buildTryOnPrompt(h: Haircut, facialFeatures?: string): string {
   return [
     `Give the person in this photo a new men's hairstyle: "${h.name}" — ${h.barber.style}.`,
     h.short,
-    'Keep their face, facial features, skin tone, expression, glasses, clothing,',
-    'pose, lighting and background exactly the same.',
-    'Change only the hair so it matches the described cut.',
+    'Change ONLY the hair so it matches the described cut. Everything else must stay',
+    'identical to the photo: the exact face and bone structure, expression, pose,',
+    'glasses, clothing, lighting and background.',
+    'Preserve every facial detail exactly as photographed — skin tone and texture, acne,',
+    'blemishes, freckles, moles, scars, and all facial hair (beard, stubble, moustache)',
+    'at the same density and shape.',
+    'Do NOT smooth, retouch, beautify, slim or idealise the face. The result must look',
+    'like the SAME person, unretouched.',
+    facialFeatures?.trim()
+      ? `Identifying features to keep: ${facialFeatures.trim()}`
+      : '',
     'Natural, photorealistic result.',
-  ].join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 /**
@@ -36,6 +53,8 @@ function buildTryOnPrompt(h: Haircut): string {
 export async function generateTryOn(args: {
   photoUri: string;
   haircut: Haircut;
+  /** Identity anchor from the face analysis — see `AnalysisResult`. */
+  facialFeatures?: string;
 }): Promise<string> {
   if (!OPENAI_API_KEY) {
     throw new Error('The image service is not configured.');
@@ -46,7 +65,7 @@ export async function generateTryOn(args: {
 
   const form = new FormData();
   form.append('model', OPENAI_IMAGE_MODEL);
-  form.append('prompt', buildTryOnPrompt(args.haircut));
+  form.append('prompt', buildTryOnPrompt(args.haircut, args.facialFeatures));
   form.append('size', OPENAI_IMAGE_SIZE);
   form.append('quality', OPENAI_IMAGE_QUALITY);
   // `input_fidelity` is intentionally omitted — gpt-image-2 rejects it.

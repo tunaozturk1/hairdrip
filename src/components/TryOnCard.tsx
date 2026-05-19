@@ -29,6 +29,7 @@ interface Props {
 export function TryOnCard({ haircut }: Props) {
   const { theme } = useTheme();
   const photoUri = useAppStore((s) => s.photoUri);
+  const analysis = useAppStore((s) => s.analysis);
   const image = useAppStore((s) => s.tryOnImages[haircut.id]);
   const setTryOnImage = useAppStore((s) => s.setTryOnImage);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
@@ -41,7 +42,11 @@ export function TryOnCard({ haircut }: Props) {
     setStatus('loading');
     setErrorMsg('');
     try {
-      const b64 = await generateTryOn({ photoUri: photoUri ?? '', haircut });
+      const b64 = await generateTryOn({
+        photoUri: photoUri ?? '',
+        haircut,
+        facialFeatures: analysis?.facialFeatures,
+      });
       setTryOnImage(haircut.id, b64);
       setSaveState('idle');
       setStatus('idle');
