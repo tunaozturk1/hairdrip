@@ -1,15 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Svg, {
-  Defs,
-  Ellipse,
-  G,
-  Path,
-  RadialGradient,
-  Rect,
-  Stop,
-  Circle,
-} from 'react-native-svg';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Badge } from '../components/Badge';
 import { PrimaryButton } from '../components/Buttons';
@@ -47,7 +37,7 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
     >
       <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
         <View style={styles.headerRow}>
-          <Eyebrow color={theme.amber}>HAIRCUTCON · MVP</Eyebrow>
+          <Eyebrow color={theme.amber}>GLOW UP</Eyebrow>
           <Eyebrow>v0.1</Eyebrow>
         </View>
 
@@ -60,51 +50,11 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
             },
           ]}
         >
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 300 280"
-            style={StyleSheet.absoluteFill as any}
-          >
-            <Defs>
-              <RadialGradient id="hero-glow" cx="0.6" cy="0.4" r="0.7">
-                <Stop offset="0%" stopColor={theme.amber} stopOpacity={0.35} />
-                <Stop offset="100%" stopColor={theme.amber} stopOpacity={0} />
-              </RadialGradient>
-            </Defs>
-            <Rect width="300" height="280" fill="url(#hero-glow)" />
-            <G transform="translate(150 140)">
-              <Ellipse cx="0" cy="20" rx="62" ry="78" fill={theme.bg1} stroke={theme.line} strokeWidth={1} />
-              <Path
-                d="M-58 -10 Q-56 -68 0 -70 Q56 -68 58 -10 Q56 -42 38 -52 Q10 -60 -10 -54 Q-38 -48 -58 -10 Z"
-                fill={theme.amber}
-                fillOpacity={0.85}
-              />
-              <Path
-                d="M-40 -22 Q-32 -16 -20 -18 Q-8 -14 4 -20 Q18 -16 32 -22 Q24 -8 0 -6 Q-24 -8 -40 -22 Z"
-                fill={theme.amberDim}
-              />
-              <Circle cx="-16" cy="14" r="1.5" fill={theme.fg2} />
-              <Circle cx="16" cy="14" r="1.5" fill={theme.fg2} />
-              <Path
-                d="M-10 36 Q0 42 10 36"
-                fill="none"
-                stroke={theme.fg2}
-                strokeWidth={1.2}
-                strokeLinecap="round"
-              />
-            </G>
-            {[
-              [20, 20],
-              [280, 20],
-              [20, 260],
-              [280, 260],
-            ].map(([x, y], i) => (
-              <G key={i} stroke={theme.fg3} strokeOpacity={0.5} strokeWidth={1} fill="none">
-                <Path d={`M${x - 8} ${y} h16 M${x} ${y - 8} v16`} />
-              </G>
-            ))}
-          </Svg>
+          <Image
+            source={require('../../assets/icon.png')}
+            style={StyleSheet.absoluteFill}
+            resizeMode="repeat"
+          />
 
           <View style={styles.heroBadge}>
             <Badge kind="amber">SCAN READY</Badge>

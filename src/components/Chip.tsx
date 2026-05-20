@@ -18,6 +18,7 @@ export function Chip({ selected = false, onPress, children, style }: ChipProps) 
         onPress={onPress}
         style={({ pressed }) => [
           styles.wrap,
+          styles.selectedWrap,
           {
             opacity: pressed ? 0.9 : 1,
             shadowColor: theme.accentGlow,
@@ -34,10 +35,9 @@ export function Chip({ selected = false, onPress, children, style }: ChipProps) 
           locations={theme.accentGradientStops as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <ChipInner color={theme.accentFg}>{children}</ChipInner>
-        </LinearGradient>
+          style={StyleSheet.absoluteFill}
+        />
+        <ChipInner color={theme.accentFg}>{children}</ChipInner>
       </Pressable>
     );
   }
@@ -79,8 +79,9 @@ const styles = StyleSheet.create({
   unselected: {
     borderWidth: 1,
   },
-  gradient: {
-    borderRadius: 14,
+  selectedWrap: {
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   inner: {
     flexDirection: 'row',

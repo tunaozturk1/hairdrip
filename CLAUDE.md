@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Product
 
-HaircutCon helps teenage boys and young men pick a haircut that fits their face shape, hair type, lifestyle, and confidence level. It addresses three problems: many don't know what cut suits them, can't clearly explain what they want to a barber, and leave the chair unhappy with the result.
+Glow Up helps teenage boys and young men pick a haircut that fits their face shape, hair type, lifestyle, and confidence level. It addresses three problems: many don't know what cut suits them, can't clearly explain what they want to a barber, and leave the chair unhappy with the result.
 
 The flow maps directly onto these: the **analysis** stage answers "what suits me," the **barber card** (`BarberScreen` / `src/data.ts` `BarberCard`) gives them precise wording to show a barber, and **history** logs outcomes so future recommendations improve. Keep this audience in mind — copy should be plain-spoken and confidence-building, not jargon-heavy.
 
@@ -29,7 +29,7 @@ Copy `.env.example` to `.env`. The app reads `EXPO_PUBLIC_*` vars via `src/confi
 
 ## Architecture
 
-A single-screen Expo / React Native app (`com.haircutcon.app`, name "HaircutCon") that analyzes a selfie to recommend men's haircuts.
+A single-screen Expo / React Native app (`com.haircutcon.app`, name "Glow Up") that analyzes a selfie to recommend men's haircuts.
 
 **Navigation is hand-rolled.** `App.tsx` holds a `useState` screen name and a `switch` — there is no navigation library. The 9 screens run in a fixed flow: `welcome → onboarding → photo → analyzing → result → recs → detail → barber → history`. Screens receive `onNext`/`onBack`/etc. callbacks as props; the picked haircut id is lifted into `App.tsx` state.
 

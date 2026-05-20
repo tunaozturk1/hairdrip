@@ -1,0 +1,28 @@
+{
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "channel": "preview",
+      "environment": "preview",
+      "ios": {
+        "simulator": false,
+        "distribution": "store"
+      },
+      "android": {
+        "distribution": "internal",
+        "buildType": "apk"
+      }
+    }
+  },
+  "submit": {
+    "preview": {
+      "ios": {
+        "appleId": "veli.ozturk@gmail.com",
+        "appleTeamId": "YPAN6V4MPN"
+      }
+    }
+  }
+}

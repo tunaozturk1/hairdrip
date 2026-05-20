@@ -1,18 +1,37 @@
 {
   "expo": {
-    "name": "HaircutCon",
+    "name": "Glow Up",
     "slug": "haircutcon",
     "version": "0.1.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "scheme": "haircutcon",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.haircutcon.app"
+      "bundleIdentifier": "ai.betastack.glowup",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.haircutcon.app"
+      "package": "ai.betastack.glowup",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro"
@@ -22,24 +41,33 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "HaircutCon uses your photos to analyze your face shape and hair.",
-          "cameraPermission": "HaircutCon uses the camera to take a selfie for face analysis."
+          "photosPermission": "Glow Up uses your photos to analyze your face shape and hair.",
+          "cameraPermission": "Glow Up uses the camera to take a selfie for face analysis."
         }
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "HaircutCon uses the camera to take a selfie for face analysis."
+          "cameraPermission": "Glow Up uses the camera to take a selfie for face analysis."
         }
       ],
       [
         "expo-media-library",
         {
-          "photosPermission": "HaircutCon saves your try-on previews to your photos.",
-          "savePhotosPermission": "HaircutCon saves your try-on previews to your photos.",
+          "photosPermission": "Glow Up saves your try-on previews to your photos.",
+          "savePhotosPermission": "Glow Up saves your try-on previews to your photos.",
           "isAccessMediaLocationEnabled": false
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "075450c8-ef5b-4914-93fd-406a955cd312"
+      }
+    },
+    "owner": "k3r3m",
+    "updates": {
+      "url": "https://u.expo.dev/075450c8-ef5b-4914-93fd-406a955cd312"
+    }
   }
 }

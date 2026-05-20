@@ -1,4 +1,4 @@
-# HaircutCon
+# Glow Up
 
 An app that helps teenage boys and young men choose a haircut that fits their face, hair type, lifestyle, and confidence level.
 
@@ -10,7 +10,7 @@ Many boys and young men:
 - **can't clearly explain what they want** to a barber, so they end up pointing at a vague reference or trusting guesswork;
 - **leave the barber unhappy** with a result that doesn't match what they pictured.
 
-HaircutCon closes that gap end to end.
+Glow Up closes that gap end to end.
 
 ## How it works
 

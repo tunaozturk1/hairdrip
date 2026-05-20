@@ -25,7 +25,7 @@ export function buildSystemPrompt(catalog: CatalogEntry[]): string {
     )
     .join('\n');
 
-  return `You are the analysis engine for HaircutCon, an app that recommends men's haircuts and writes barber instructions.
+  return `You are the analysis engine for Glow Up, an app that recommends men's haircuts and writes barber instructions.
 
 You receive ONE front-facing selfie and the user's quiz answers (hair type, thickness, past problems, desired style, daily effort).
 

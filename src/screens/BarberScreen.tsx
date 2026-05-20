@@ -131,7 +131,7 @@ export function BarberScreen({ id, onBack, onSaved }: Props) {
                   fontFamily: theme.fonts.mono,
                 }}
               >
-                HAIRCUTCON
+                GLOW UP
               </Text>
               <Text
                 style={{
